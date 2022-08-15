@@ -10,9 +10,9 @@ class HashTable {
       sum += key.charCodeAt(i);
     }
 
-    let hash = sum % 71;
+    let has = sum % 71;
 
-    return hash;
+    return has;
   }
 
   put(key, value) {
@@ -21,6 +21,7 @@ class HashTable {
     if (this.table[hash] === undefined) {
       this.table[hash] = [];
     }
+
     return this.table[hash].push([key, value]);
   }
 
@@ -40,11 +41,3 @@ class HashTable {
     return delete this.table[this.modulearHash(key)];
   }
 }
-
-const hashTable = new HashTable();
-
-hashTable.put('JIWOO', '@jiwooHong');
-hashTable.put('JIWOO', '@jiwooHong2');
-hashTable.put('TOM', '@tomCruise');
-
-console.log(hashTable.get('JIWOO'));

@@ -1,0 +1,42 @@
+/**
+* Style Sheet
+*/
+.container {
+  width: 1180px;
+  padding: 10px;
+  position: relative;
+}
+
+.container .actionbox {
+  align-items: center;
+  justify-content: space-between;
+  width: 300px;
+  margin: 0 auto;
+}
+
+.container .actionbox button.like {
+  padding: 10px 50px;
+  border: 3px solid #afacac;
+  border-radius: 30px;
+  background: #fff;
+  outline: none;
+  color: #afacac;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+button i {
+  margin-right: 5px;
+}
+
+.container .actionbox button.like:hover {
+  border-color: red;
+  color: red;
+}
+
+.container .actionbox button.like.clicked {
+  background: red;
+  color: #fff;
+  border-color: red;
+}

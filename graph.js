@@ -16,6 +16,7 @@ class Graph {
     this.edges++;
   }
 
+  // QUEUE
   bfs(goal, root = this.vertices[0]) {
     let adj = this.adjacent;
 
@@ -73,6 +74,7 @@ class Graph {
     return false;
   }
 
+  // STACK
   dfs(goal, v = this.vertices[0], discovered = {}) {
     let adj = this.adjacent;
 

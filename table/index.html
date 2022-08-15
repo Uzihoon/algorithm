@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Table Sorting</title>
+    <style>
+      table {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      td,
+      th {
+        border: 1px solid #2e2e2e;
+        padding: 8px;
+      }
+
+      th {
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: 0.3s;
+        cursor: pointer;
+        position: relative;
+      }
+
+      th.sort::after {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: 50%;
+        right: 30%;
+        transform: translate(30%, -50%);
+      }
+
+      th.asc::after {
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-bottom: 12px solid black;
+      }
+
+      th.desc::after {
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-top: 12px solid black;
+      }
+
+      tbody tr:nth-child(odd) {
+        background-color: #e0e0e0;
+      }
+
+      tbody tr:hover {
+        background-color: #2e2e2e;
+        color: #fff;
+      }
+    </style>
+    <script>
+      let sorted = { key: null, order: true };
+      const personData = [
+        { name: 'Dylan', age: 31, gender: 'F' },
+        { name: 'Jiwoo', age: 23, gender: 'F' },
+        { name: 'Hong', age: 11, gender: 'M' },
+        { name: 'Kim', age: 53, gender: 'F' },
+        { name: 'Lee', age: 534, gender: 'M' }
+      ];
+
+      function sortData(id) {
+        const { key, order } = sorted;
+        const nextOrder = id === key ? !order : true;
+
+        personData.sort((a, b) => {
+          const type = typeof a[id];
+
+          const data1 = a[id];
+          const data2 = b[id];
+          if (type === 'string')
+            return nextOrder
+              ? data1.localeCompare(data2)
+              : data2.localeCompare(data1);
+
+          return nextOrder ? data1 - data2 : data2 - data1;
+        });
+        loadTableBody(personData);
+        setHeader(id, nextOrder);
+        sorted = { key: id, order: nextOrder };
+      }
+
+      function setHeader(id, order) {
+        const target = document.getElementById(id);
+        const th = document.querySelectorAll('.header');
+        const sortIconClassName = 'sort';
+
+        [...th].map(el => {
+          el.className = 'header';
+        });
+
+        target.classList.add('sort', order ? 'asc' : 'desc');
+      }
+
+      function loadTableHead(tableData) {
+        const head = document.getElementById('tableHead');
+        const tr = document.createElement('tr');
+        Object.keys(tableData[0]).map(key => {
+          const th = document.createElement('th');
+          th.textContent = key;
+          th.setAttribute('id', key);
+          th.classList.add('header');
+          th.addEventListener('click', () => sortData(key));
+
+          tr.appendChild(th);
+        });
+        head.appendChild(tr);
+      }
+
+      function loadTableBody(tableData) {
+        const body = document.getElementById('tableBody');
+        body.innerHTML = '';
+        tableData.forEach(table => {
+          const tr = document.createElement('tr');
+          Object.entries(table).map(([key, value]) => {
+            const td = document.createElement('td');
+            td.textContent = value;
+            tr.appendChild(td);
+          });
+          body.appendChild(tr);
+        });
+      }
+
+      function initialize() {
+        loadTableHead(personData);
+        loadTableBody(personData);
+      }
+
+      window.addEventListener('load', initialize);
+    </script>
+  </head>
+  <body>
+    <table>
+      <thead id="tableHead"> </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </body>
+</html>
