@@ -20,3 +20,22 @@ const binarySearch = (arr, num) => {
 };
 
 console.log(binarySearch(powers, 16));
+
+function indexOf(array, element, offset = 0) {
+  const half = parseInt(array.length / 2);
+  const current = array[half];
+
+  if (current === element) {
+    return offset + half;
+  } else if (element > current) {
+    const right = array.slice(half);
+    return indexOf(right, element, offset + half);
+  } else {
+    const left = array.slice(0, half);
+    return indexOf(left, element, offset);
+  }
+}
+
+const directory = ['Adrian', 'Bella', 'Charlotte'];
+
+console.log(indexOf(directory, 'Bella'));

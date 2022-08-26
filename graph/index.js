@@ -53,7 +53,6 @@ function bfs(start, target) {
 function dfs(start, target, visited = new Set()) {
   visited.add(start);
   const destinations = adjacencyList.get(start);
-
   for (const destination of destinations) {
     if (destination === target) {
       return destinations;

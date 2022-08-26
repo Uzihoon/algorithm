@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Tic Tae Toe</title>
+    <title>Document</title>
     <style>
       * {
         margin: 0;
@@ -13,65 +13,116 @@
       }
 
       #app {
-        text-align: center;
-        font-family: 'Courier New', Courier, monospace;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 30px;
       }
 
       .game--container {
-        width: 500px;
-        margin: 20px auto;
-        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .game--header {
+        margin-bottom: 10px;
+      }
+
+      .game--status {
+        margin-bottom: 7px;
       }
 
       .game--box {
+        width: 100%;
+        height: 100px;
         display: flex;
-        align-items: center;
-        justify-content: center;
       }
 
       .cell {
         width: 100px;
         height: 100px;
-        border: 1px solid #222;
+        border: 1px solid black;
         cursor: pointer;
-        line-height: 100px;
-        font-size: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
       }
     </style>
+
     <script>
       class TicTacToe {
-        constructor(n, playerList) {
-          this.initial(n);
+        constructor(id, n = 3, playerList = ['O', 'X']) {
           this.n = n;
-          this.currentPlayer = 0;
           this.playerList = playerList;
-          this.gameStatus = true;
+          this.parentId = id;
 
-          this.winning = user => `Player ${user} has won`;
-          this.draw = () => 'Game ended in a draw';
-          this.turn = user => `It's ${user}'s turn`;
+          this.classList = {
+            status: 'game--status',
+            container: 'game--container',
+          };
         }
 
-        initial(n) {
-          this.board = [...Array(n)].map(() => [...Array(n)]);
-        }
-
-        reset(parentClassName) {
-          this.initial(this.n);
-          this.gameStatus = true;
+        initial() {
           this.currentPlayer = 0;
-          this.render(parentClassName);
+          this.clicked = 0;
+          this.gameStatus = true;
+          this.setMatrix(this.n);
+          this.renderBoard();
         }
 
-        render(parentClassName) {
-          const container = document.querySelector(parentClassName);
+        getWinnerMsg = (user) => `Player ${user} has won!`;
+
+        getDrawerMsg = () => `Game ended in a draw`;
+
+        getNextTurnMsg = (user) => `It's ${user}'s turn.`;
+
+        setMatrix(n) {
+          this.matrix = [...Array(n)].map(() => [...Array(n)]);
+        }
+
+        render() {
+          if (!this.parentId) throw Error(`Please set parent's id!`);
+          const app = document.getElementById(this.parentId);
+
+          const head = document.createElement('h1');
+          head.classList.add('game--header');
+          head.textContent = 'Tic Tac Toe Game';
+
+          const status = document.createElement('h2');
+          status.classList.add(this.classList.status);
+
+          const button = document.createElement('button');
+          button.classList.add('game--reset');
+          button.textContent = 'Reset Game';
+          button.addEventListener('click', () => {
+            this.initial();
+          });
+
+          const container = document.createElement('div');
+          container.classList.add(this.classList.container);
+
+          app.append(...[head, status, button, container]);
+          this.initial();
+        }
+
+        renderBoard() {
+          const container = document.querySelector(
+            `.${this.classList.container}`
+          );
+          container.style.width = this.n * 100 + 'px';
+          container.style.height = this.n * 100 + 'px';
           container.innerHTML = '';
 
-          this.board.map((colBox, row) => {
+          this.matrix.map((line, row) => {
             const box = document.createElement('div');
             box.classList.add('game--box');
 
-            colBox.forEach((_, col) => {
+            line.forEach((_, col) => {
               const cell = document.createElement('div');
               cell.classList.add('cell');
               cell.setAttribute('data-row', row);
@@ -82,128 +133,101 @@
             });
             container.appendChild(box);
           });
-          this.showMessage(this.turn);
+
+          this.showMessage(this.getNextTurnMsg);
+        }
+
+        showMessage(msg) {
+          const status = document.querySelector(`.${this.classList.status}`);
+          status.textContent = msg(this.playerList[this.currentPlayer]);
         }
 
         onClick(event) {
           event.stopPropagation();
-          const row = event.target.getAttribute('data-row');
-          const col = event.target.getAttribute('data-col');
-          const player = this.move(+row, +col, this.currentPlayer);
+          const row = +event.target.getAttribute('data-row');
+          const col = +event.target.getAttribute('data-col');
+          const player = this.move(row, col, this.currentPlayer);
+
           if (player !== undefined) {
             event.target.textContent = this.playerList[player];
           }
         }
 
-        showMessage(msg) {
-          const status = document.querySelector('.game--status');
-          status.textContent = msg(this.playerList[this.currentPlayer]);
-        }
-
         move(row, col, player) {
-          if (typeof this.board[row][col] === 'number' || !this.gameStatus) {
+          if (typeof this.matrix[row][col] === 'number' || !this.gameStatus) {
             return;
           }
-          this.board[row][col] = player;
+
+          this.matrix[row][col] = player;
+
           if (
             this.checkRow(row, player) ||
-            this.checkColum(col, player) ||
-            (row === col && this.checkDiagonal(player)) ||
-            (col === this.n - row - 1 && this.checkAntiDiagnoal(player))
+            this.checkCol(col, player) ||
+            (row && col && this.checkDiagonal(player)) ||
+            (col === this.n - row - 1 && this.checkAntiDiagonal(player))
           ) {
             this.gameStatus = false;
-            this.showMessage(this.winning);
-            return player;
-          } else if (
-            !this.board.filter(
-              row => row.filter(col => col === undefined).length
-            ).length
-          ) {
-            this.showMessage(this.draw);
-            return player;
+            this.showMessage(this.getWinnerMsg);
+          } else if (this.clicked + 1 === this.n * this.n) {
+            this.showMessage(this.getDrawerMsg);
           } else {
             const next = this.currentPlayer + 1;
             this.currentPlayer = next >= this.playerList.length ? 0 : next;
-            this.showMessage(this.turn);
-            return player;
+            this.showMessage(this.getNextTurnMsg);
+            this.clicked += 1;
           }
-        }
-
-        checkDiagonal(player) {
-          for (let row = 0; row < this.n; row++) {
-            if (this.board[row][row] !== player) {
-              return false;
-            }
-          }
-
-          return true;
-        }
-
-        checkAntiDiagnoal(player) {
-          for (let row = 0; row < this.n; row++) {
-            if (this.board[row][this.n - row - 1] !== player) {
-              return false;
-            }
-          }
-
-          return true;
-        }
-
-        checkColum(col, player) {
-          for (let row = 0; row < this.n; row++) {
-            if (this.board[row][col] !== player) {
-              return false;
-            }
-          }
-
-          return true;
+          return player;
         }
 
         checkRow(row, player) {
           for (let col = 0; col < this.n; col++) {
-            if (this.board[row][col] !== player) {
+            if (this.matrix[row][col] !== player) {
               return false;
             }
           }
+          return true;
+        }
 
+        checkCol(col, player) {
+          for (let row = 0; row < this.n; row++) {
+            if (this.matrix[row][col] !== player) {
+              return false;
+            }
+          }
+          return true;
+        }
+
+        checkDiagonal(player) {
+          for (let row = 0; row < this.n; row++) {
+            if (this.matrix[row][row] !== player) {
+              return false;
+            }
+          }
+          return true;
+        }
+
+        checkAntiDiagonal(player) {
+          for (let row = 0; row < this.n; row++) {
+            if (this.matrix[row][this.n - row - 1] !== player) {
+              return false;
+            }
+          }
           return true;
         }
       }
 
-      const renderLayout = tictaetoe => {
-        const app = document.querySelector('#app');
+      function main() {
+        const tictactoe = new TicTacToe('app', 3, ['Tom', 'Bob']);
+        tictactoe.render();
+      }
 
-        const head = document.createElement('h1');
-        head.classList.add('game--header');
-        head.textContent = 'Tic Tae Toe Game';
+      window.addEventListener('load', main);
 
-        const status = document.createElement('h2');
-        status.classList.add('game--status');
-
-        const button = document.createElement('button');
-        button.classList.add('game--restart');
-        button.textContent = 'Restart Game';
-        button.addEventListener('click', () =>
-          tictaetoe.reset('.game--container')
-        );
-
-        const container = document.createElement('div');
-        container.classList.add('game--container');
-
-        app.appendChild(head);
-        app.appendChild(status);
-        app.appendChild(button);
-        app.appendChild(container);
-      };
-
-      const initial = () => {
-        const myTictaetoe = new TicTacToe(4, ['James', 'Tom']);
-        renderLayout(myTictaetoe);
-
-        myTictaetoe.render('.game--container');
-      };
-
-      window.addEventListener('load', initial);
+      /**
+       * [0,0][1,0][2,0]
+       * [0,1][1,1][2,1]
+       * [0,2][1,2][2,2]
+       */
     </script>
   </head>
   <body>

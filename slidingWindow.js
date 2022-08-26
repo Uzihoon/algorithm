@@ -11,8 +11,7 @@ function maxSum(arr, n, k) {
 
   return max_sum;
 }
-
-function inhancedMaxSum(arr, n, k) {
+function inhancedMaxSum(arr, k) {
   let max = 0;
   let sum = 0;
 
@@ -20,10 +19,8 @@ function inhancedMaxSum(arr, n, k) {
     sum += arr[i];
     max = sum;
   }
-  console.log(sum);
 
-  for (let i = k; i < n; i++) {
-    console.log(arr[i], arr[i - k]);
+  for (let i = k; i < arr.length; i++) {
     sum += arr[i] - arr[i - k];
 
     if (sum > max) {
@@ -34,9 +31,32 @@ function inhancedMaxSum(arr, n, k) {
   return max;
 }
 
-const arr = [1, 4, 2, 10, 2, 3, 1, 0, 20];
-const k = 2;
+// const arr = [1, 4, 2, 10, 2, 3, 1, 0, 20];
+let arr = [1, 3, 5, 6, 2, 7, 8];
+const k = 3;
 const n = arr.length;
 
 // console.log(maxSum(arr, n, k));
-console.log(inhancedMaxSum(arr, n, k));
+console.log(inhancedMaxSum(arr, k));
+
+function slidingWindow2() {
+  let arr = [1, 3, 5, 6, 2, 7, 8];
+  let maxSum = 0;
+  let sumOfWindow = 0;
+  let windowSize = 0;
+
+  for (let i = 0; i <= arr.length; i++) {
+    if (windowSize === 3) {
+      maxSum = Math.max(maxSum, sumOfWindow);
+      sumOfWindow = sumOfWindow - arr[i - 3];
+      windowSize--;
+    }
+
+    sumOfWindow = sumOfWindow + arr[i];
+    windowSize++;
+  }
+
+  console.log('The maximum sum is: ' + maxSum);
+}
+
+slidingWindow2();

@@ -2,7 +2,7 @@
 const nums = [128, 0, 64, 16, 4, 8, 2];
 
 const merge = (left, right) => {
-  let result = [];
+  const result = [];
 
   while (left.length && right.length) {
     if (left[0] < right[0]) {
@@ -15,14 +15,14 @@ const merge = (left, right) => {
   return [...result, ...left, ...right];
 };
 
-const mergeSort = arr => {
+const mergeSort = (arr) => {
   if (arr.length <= 1) return arr;
 
   const pivot = arr.length / 2;
   const left = arr.slice(0, pivot);
-  const right = arr.slice(pivot, arr.length);
+  const right = arr.slice(pivot);
 
   return merge(mergeSort(left), mergeSort(right));
 };
 
-mergeSort(nums);
+console.log(mergeSort(nums));

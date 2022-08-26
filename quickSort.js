@@ -7,27 +7,27 @@ function swap(items, leftIndex, rightIndex) {
 }
 
 function partition(items, left, right) {
-  const pivot = items[Math.floor((right + left) / 2)];
-  let i = left;
-  let j = right;
+  const pivot = items[Math.floor((left + right) / 2)];
+  let l = left;
+  let h = right;
 
-  while (i <= j) {
-    while (items[i] < pivot) {
-      i++;
+  while (l <= h) {
+    while (items[l] < pivot) {
+      l++;
     }
 
-    while (items[j] > pivot) {
-      j--;
+    while (items[h] > pivot) {
+      h--;
     }
 
-    if (i <= j) {
-      swap(items, i, j);
-      i++;
-      j--;
+    if (l <= h) {
+      swap(items, l, h);
+      l++;
+      h--;
     }
   }
 
-  return i;
+  return l;
 }
 
 function quickSort(items, left = 0, right = items.length - 1) {

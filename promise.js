@@ -59,12 +59,12 @@ class MyPromise {
   then(onFulfilled, onRejected) {
     // Register consuming functions.
     const isOnFulfilledFunction = typeof onFulfilled === 'function';
-    this.onFulfilled = isOnFulfilledFunction ? onFulfilled : value => value;
+    this.onFulfilled = isOnFulfilledFunction ? onFulfilled : (value) => value;
 
     const isOnRejectedFunction = typeof onRejected === 'function';
     this.onRejected = isOnRejectedFunction
       ? onRejected
-      : error => {
+      : (error) => {
           throw error;
         };
 
@@ -88,7 +88,7 @@ class MyPromise {
       return value;
     }
 
-    return new MyPromise(resolve => {
+    return new MyPromise((resolve) => {
       resolve(value);
     });
   }
