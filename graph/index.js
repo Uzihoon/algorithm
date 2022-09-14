@@ -10,7 +10,7 @@ const routes = [
   ['MEX', 'BKK'],
   ['MEX', 'LIM'],
   ['MEX', 'EZE'],
-  ['LIM', 'BKK']
+  ['LIM', 'BKK'],
 ];
 
 const adjacencyList = new Map();
@@ -26,7 +26,7 @@ function addEdge(origin, destination) {
 
 airports.forEach(addNode);
 
-routes.forEach(route => addEdge(...route));
+routes.forEach((route) => addEdge(...route));
 
 function bfs(start, target) {
   const queue = [start];

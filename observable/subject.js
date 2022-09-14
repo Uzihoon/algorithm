@@ -1,0 +1,33 @@
+class Subject {
+  constructor() {
+    this.subscribers = [];
+  }
+
+  subscribe(subscriber) {
+    const sub = new Observer(subscriber);
+    this.subscribers.push(sub);
+    return {
+      unsubscribe: () => {
+        this.subscribers = this.subscribers.filter((s) => s !== sub);
+      },
+    };
+  }
+
+  next = (value) => {
+    this.subscribers.forEach((subscriber) => {
+      subscriber.next(value);
+    });
+  };
+
+  error = (err) => {
+    this.subscribers.forEach((subscriber) => {
+      subscriber.error(err);
+    });
+  };
+
+  complete = () => {
+    this.subscribers.forEach((subscriber) => {
+      subscriber.complete();
+    });
+  };
+}

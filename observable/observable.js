@@ -4,7 +4,7 @@ class Observable {
   }
 
   subscribe(subscriber) {
-    const wrapper = {
+    const subscriberWrapper = {
       unsubscribed: false,
       next(value) {
         if (this.unsubscribed) return;
@@ -23,12 +23,12 @@ class Observable {
       },
       unsubscribe() {
         this.unsubscribed = true;
-      }
+      },
     };
 
-    this._setup(wrapper);
+    this._setup(subscriberWrapper);
 
-    return wrapper;
+    return subscriberWrapper;
   }
 }
 

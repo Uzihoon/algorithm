@@ -13,18 +13,20 @@ function getHeight(tree) {
   return maxHeight + 1;
 }
 
-// BFS
+//BFS
 function getHeight(tree) {
-  let height = 0;
-  if (!tree) return height;
+  let maxHeight = 0;
 
-  let q = [[tree, 1]];
+  if (!tree) return maxHeight;
 
-  while (q.length) {
-    const [node, h] = q.shift();
-    height = Math.max(h, height);
+  let queue = [[tree, 1]];
+
+  while (queue.length) {
+    const [node, height] = queue.shift();
+    maxHeight = Math.max(maxHeight, height);
+
     for (let child of node.children) {
-      q.push([child, h + 1]);
+      queue.push([child, height + 1]);
     }
   }
 

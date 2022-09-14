@@ -1,6 +1,6 @@
 import Observable from './observable';
 
-function from(input) {
+export default function from(input) {
   if (input instanceof Observable) {
     return observableFromObservable(input);
   }
@@ -17,23 +17,23 @@ function from(input) {
     return observableFromArrayLike(input);
   }
 
-  throw new Error('Incorrect input type');
+  throw new Error('incorrect input type');
 }
 
 function observableFromObservable(input) {
-  return new Observable(sub => {
+  return new Observable((sub) => {
     input.subscribe(sub);
   });
 }
 
 function observableFromPromise(input) {
-  return new Observable(sub => {
+  return new Observable((sub) => {
     input
       .then(
-        val => {
+        (val) => {
           sub.next(val);
         },
-        err => {
+        (err) => {
           sub.error(err);
         }
       )
@@ -44,7 +44,7 @@ function observableFromPromise(input) {
 }
 
 function observableFromIterable(input) {
-  return new Observable(sub => {
+  return new Observable((sub) => {
     try {
       for (let el of input) {
         sub.next(el);
@@ -58,7 +58,7 @@ function observableFromIterable(input) {
 }
 
 function observableFromArrayLike(input) {
-  return new Observable(sub => {
+  return new Observable((sub) => {
     try {
       for (let i = 0; i < input.length; i++) {
         sub.next(input[i]);
@@ -66,7 +66,6 @@ function observableFromArrayLike(input) {
     } catch (err) {
       sub.error(err);
     }
-
     sub.complete();
   });
 }
