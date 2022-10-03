@@ -5,50 +5,53 @@ const findLadders = (beginWord, endWord, wordList) => {
   wordList.push(beginWord);
 
   const wordToNeighbors = new Map();
-  const wordToShortLen = new Map();
+  const wordToShortest = new Map();
   const shortestLen = findShortestLen(beginWord, endWord);
-  findAllNeighbors(beginWord);
   const ladders = [];
 
   recursion(beginWord, shortestLen, [beginWord]);
+
   return ladders;
 
-  function recursion(word, shortest, slate) {
-    if (shortest === 0) {
-      ladders.push([...slate]);
+  function recursion(currWord, currShortest, currLadder) {
+    if (currShortest === 0) {
+      ladders.push([...currLadder]);
       return;
     }
 
-    const neighbors = wordToNeighbors.get(word);
-    for (const neighbor of neighbors) {
+    const neighbors = findAllNeighbors(currWord);
+
+    for (let neighbor of neighbors) {
       if (
-        !wordToShortLen.has(neighbor) ||
-        wordToShortLen.get(neighbor) !== shortest - 1
+        !wordToShortest.has(neighbor) ||
+        wordToShortest.get(neighbor) !== currShortest - 1
       ) {
         continue;
       }
 
-      slate.push(neighbor);
-      recursion(neighbor, shortest - 1, slate);
-      slate.pop();
+      currLadder.push(neighbor);
+      recursion(neighbor, currShortest - 1, currLadder);
+      currLadder.pop();
     }
   }
 
   function findShortestLen(beginWord, endWord) {
-    const queue = [endWord];
+    const queue = [];
+    queue.push(beginWord);
     let count = 0;
 
-    wordToShortLen.set(endWord, count);
+    wordToShortest.set(endWord, count);
+
     while (queue.length) {
+      count++;
       const size = queue.length;
-      count += 1;
 
       for (let i = 0; i < size; i++) {
-        const word = queue.shift();
-        const neighbors = findAllNeighbors(word);
-        for (const neighbor of neighbors) {
-          if (wordToShortLen.has(neighbor)) continue;
-          wordToShortLen.set(neighbor, count);
+        const currLast = queue.shift();
+        const neighbors = findAllNeighbors(currLast);
+        for (let neighbor of neighbors) {
+          if (wordToShortest.has(neighbor)) continue;
+          wordToShortest.set(neighbor, count);
           if (neighbor === beginWord) {
             return count;
           }
@@ -56,14 +59,18 @@ const findLadders = (beginWord, endWord, wordList) => {
         }
       }
     }
+
+    return -1;
   }
 
   function findAllNeighbors(word) {
+    if (wordToNeighbors.has(word)) return wordToNeighbors.get(word);
+
     const neighbors = [];
-    for (const neighbor of wordList) {
-      if (neighbor === word) continue;
-      if (isNeighbor(word, neighbor)) {
-        neighbors.push(neighbor);
+
+    for (let w of wordList) {
+      if (isNeighbor(word, w)) {
+        neighbors.push(w);
       }
     }
 
@@ -71,21 +78,17 @@ const findLadders = (beginWord, endWord, wordList) => {
     return neighbors;
   }
 
-  function isNeighbor(word1, word2) {
-    if (word1.length !== word2.length) return false;
-    let differ = 0;
+  function isNeighbor(w1, w2) {
+    if (w1.length !== w2.length) return false;
+    let diff = 0;
 
-    for (let i = 0; i < word1.length; i++) {
-      if (word1[i] !== word2[i]) {
-        differ += 1;
-        if (differ > 1) return false;
+    for (let i = 0; i < w1.length; i++) {
+      if (w1.charAt(i) !== w2.charAt(i)) {
+        diff++;
+        if (diff > 1) return false;
       }
     }
 
-    return differ === 1;
+    return diff === 1;
   }
 };
-
-console.log(
-  findLadders('hit', 'cog', ['hot', 'dot', 'dog', 'lot', 'log', 'cog'])
-);

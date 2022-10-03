@@ -17,6 +17,9 @@ class WordDictionary {
 
     for (let i = 0; i < word.length; i++) {
       const w = word[i];
+
+      if (i === word.length - 1 && node.children[w] && node.children.end)
+        continue;
       if (!node.children[w]) {
         node.children[w] = new TrieNode(w);
       }
